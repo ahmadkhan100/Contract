@@ -18,7 +18,6 @@ const App = () => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [gameMode, setGameMode] = useState('new');
   const [roundHistory, setRoundHistory] = useState([]);
-  const [previousScores, setPreviousScores] = useState({});
 
   useEffect(() => {
     loadGameState();
@@ -31,7 +30,7 @@ const App = () => {
 
   useEffect(() => {
     saveGameState();
-  }, [players, currentRound, currentPhase, bids, wins, leaderboard, gameMode, roundHistory, previousScores]);
+  }, [players, currentRound, currentPhase, bids, wins, leaderboard, gameMode, roundHistory]);
 
   const saveGameState = () => {
     const gameState = {
@@ -42,8 +41,7 @@ const App = () => {
       wins,
       leaderboard,
       gameMode,
-      roundHistory,
-      previousScores
+      roundHistory
     };
     localStorage.setItem('gameState', JSON.stringify(gameState));
   };
@@ -60,7 +58,6 @@ const App = () => {
       setLeaderboard(gameState.leaderboard);
       setGameMode(gameState.gameMode);
       setRoundHistory(gameState.roundHistory);
-      setPreviousScores(gameState.previousScores || {});
     }
   };
 
@@ -81,10 +78,6 @@ const App = () => {
       const { [playerName]: removed, ...rest } = prevWins;
       return rest;
     });
-    setPreviousScores(prevScores => {
-      const { [playerName]: removed, ...rest } = prevScores;
-      return rest;
-    });
   };
 
   const handleBid = (playerName, bid) => {
@@ -96,11 +89,6 @@ const App = () => {
   };
 
   const handleWinLose = (playerName, won) => {
-    // Store the current score before updating
-    setPreviousScores(prev => ({
-      ...prev,
-      [playerName]: players.find(p => p.name === playerName).score
-    }));
     setWins(prev => ({ ...prev, [playerName]: won }));
     updateScores(playerName, bids[playerName], won);
   };
@@ -110,13 +98,20 @@ const App = () => {
       const { [playerName]: removed, ...rest } = prev;
       return rest;
     });
-    setPlayers(prevPlayers => prevPlayers.map(player => {
-      if (player.name === playerName) {
-        // Always reset to the previous score, which could be 0 or the score from the previous round
-        return { ...player, score: previousScores[playerName] || 0 };
+    
+    if (roundHistory.length > 0) {
+      const lastRound = roundHistory[roundHistory.length - 1];
+      const playerLastRound = lastRound.players.find(p => p.name === playerName);
+      if (playerLastRound) {
+        setPlayers(prevPlayers => prevPlayers.map(player => 
+          player.name === playerName ? { ...player, score: playerLastRound.score } : player
+        ));
       }
-      return player;
-    }));
+    } else {
+      setPlayers(prevPlayers => prevPlayers.map(player => 
+        player.name === playerName ? { ...player, score: 0 } : player
+      ));
+    }
   };
 
   const updateScores = (playerName, bid, won) => {
@@ -142,8 +137,7 @@ const App = () => {
       phase: currentPhase, 
       players: [...players], 
       bids: {...bids}, 
-      wins: {...wins},
-      previousScores: {...previousScores}
+      wins: {...wins}
     }]);
     
     if (currentRound === 7 && currentPhase === 2) {
@@ -160,11 +154,6 @@ const App = () => {
 
     setBids({});
     setWins({});
-    // Store the current scores as previous scores for the next round
-    setPreviousScores(players.reduce((acc, player) => {
-      acc[player.name] = player.score;
-      return acc;
-    }, {}));
     setPlayers(prevPlayers => {
       const rotatedPlayers = [...prevPlayers.slice(1), prevPlayers[0]];
       return rotatedPlayers; // Scores are not reset
@@ -180,7 +169,6 @@ const App = () => {
       setPlayers(lastRound.players);
       setBids(lastRound.bids);
       setWins(lastRound.wins);
-      setPreviousScores(lastRound.previousScores);
       setRoundHistory([...roundHistory]);
     }
   };
@@ -211,7 +199,6 @@ const App = () => {
     setCurrentPhase(1);
     setBids({});
     setWins({});
-    setPreviousScores({});
     setGameMode('playing');
     setErrorMessage('');
     setRoundHistory([]);
