@@ -1,17 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { AlertCircle, PlusCircle, Trash2 } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from './components/ui/alert';
-import { Button } from './components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
-import { Input } from './components/ui/input';
-import { Label } from './components/ui/label';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './components/ui/table';
-
-const getSuit = (round) => {
-  if (round % 5 === 3) return 'High Card';
-  const suits = ['Spades', 'Hearts', 'Clubs', 'Diamonds'];
-  return suits[(round - 1) % 4];
-};
+import { AlertCircle } from 'lucide-react';
+import AddPlayer from './components/AddPlayer';
+import GameInfo from './components/GameInfo';
+import PlayerCard from './components/PlayerCard';
+import Leaderboard from './components/Leaderboard';
 
 const App = () => {
   const [players, setPlayers] = useState([]);
@@ -22,12 +14,10 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [newPlayerName, setNewPlayerName] = useState('');
   const [leaderboard, setLeaderboard] = useState([]);
-  const [gameMode, setGameMode] = useState('new'); // 'new', 'continue', 'leaderboard'
+  const [gameMode, setGameMode] = useState('new');
 
   useEffect(() => {
-    const cards = currentPhase === 1 
-      ? 8 - currentRound 
-      : currentRound;
+    const cards = currentPhase === 1 ? 8 - currentRound : currentRound;
     setCardsInRound(cards);
   }, [currentRound, currentPhase]);
 
@@ -118,143 +108,50 @@ const App = () => {
   };
 
   if (gameMode === 'leaderboard') {
-    return (
-      <div className="p-4 max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-center">Leaderboard</h1>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Game</TableHead>
-              <TableHead>Winner</TableHead>
-              <TableHead>Score</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {leaderboard.map((game, index) => {
-              const winner = game.reduce((prev, current) => (prev.score > current.score) ? prev : current);
-              return (
-                <TableRow key={index}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{winner.name}</TableCell>
-                  <TableCell>{winner.score}</TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-        <Button onClick={startNewGame} className="mt-4 w-full">New Game</Button>
-      </div>
-    );
+    return <Leaderboard leaderboard={leaderboard} startNewGame={startNewGame} />;
   }
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-center">Contract Card Game</h1>
 
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Game Info</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label>Round</Label>
-              <div className="text-2xl font-bold">{currentRound}</div>
-            </div>
-            <div>
-              <Label>Phase</Label>
-              <div className="text-2xl font-bold">{currentPhase}</div>
-            </div>
-            <div>
-              <Label>Cards</Label>
-              <div className="text-2xl font-bold">{cardsInRound}</div>
-            </div>
-            <div>
-              <Label>Suit</Label>
-              <div className="text-2xl font-bold">{getSuit(currentRound)}</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <GameInfo
+        currentRound={currentRound}
+        currentPhase={currentPhase}
+        cardsInRound={cardsInRound}
+      />
 
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Add Player</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex space-x-2">
-            <Input
-              type="text"
-              value={newPlayerName}
-              onChange={(e) => setNewPlayerName(e.target.value)}
-              placeholder="Enter player name"
-            />
-            <Button onClick={addPlayer}>
-              <PlusCircle className="mr-2 h-4 w-4" /> Add
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <AddPlayer
+        newPlayerName={newPlayerName}
+        setNewPlayerName={setNewPlayerName}
+        addPlayer={addPlayer}
+      />
 
-      {players.map((player, index) => (
-        <Card key={player.name} className="mb-4">
-          <CardHeader>
-            <CardTitle className="flex justify-between items-center">
-              {player.name}
-              <Button variant="destructive" size="sm" onClick={() => removePlayer(player.name)}>
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center space-x-4">
-              <div>
-                <Label>Score</Label>
-                <div className="text-2xl font-bold">{player.score}</div>
-              </div>
-              <div>
-                <Label>Bid</Label>
-                <Input 
-                  type="number" 
-                  min="0" 
-                  max={cardsInRound}
-                  value={bids[player.name] || ''}
-                  onChange={(e) => handleBid(player.name, parseInt(e.target.value))}
-                  className="w-20"
-                />
-              </div>
-              <Button 
-                onClick={() => handleWinLose(player.name, true)}
-                disabled={isWinLoseDisabled()}
-                className="bg-green-500 hover:bg-green-600"
-              >
-                Win
-              </Button>
-              <Button 
-                onClick={() => handleWinLose(player.name, false)}
-                disabled={isWinLoseDisabled()}
-                className="bg-red-500 hover:bg-red-600"
-              >
-                Lose
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+      {players.map((player) => (
+        <PlayerCard
+          key={player.name}
+          player={player}
+          bid={bids[player.name]}
+          handleBid={handleBid}
+          handleWinLose={handleWinLose}
+          removePlayer={removePlayer}
+          isWinLoseDisabled={isWinLoseDisabled()}
+          cardsInRound={cardsInRound}
+        />
       ))}
 
-      <Button 
+      <button 
         onClick={nextRound}
-        className="mt-4 w-full"
+        className="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
       >
         Next Round
-      </Button>
+      </button>
 
       {errorMessage && (
-        <Alert variant="destructive" className="mt-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{errorMessage}</AlertDescription>
-        </Alert>
+        <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
+          <AlertCircle className="inline-block mr-2 h-4 w-4" />
+          <span>{errorMessage}</span>
+        </div>
       )}
     </div>
   );
