@@ -133,7 +133,7 @@ const App = () => {
 
   if (gameMode === 'leaderboard') {
     return (
-      <div className="p-4 max-w-4xl mx-auto bg-gray-900 text-white min-h-screen">
+      <div className="p-4 max-w-4xl mx-auto">
         <Leaderboard leaderboard={leaderboard} startNewGame={startNewGame} />
         <Footer />
       </div>
@@ -141,13 +141,13 @@ const App = () => {
   }
 
   return (
-    <div className="p-4 max-w-4xl mx-auto bg-gray-900 text-white min-h-screen">
+    <div className="p-4 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-center">Contract Card Game</h1>
 
       {gameMode === 'new' && (
         <button 
           onClick={startNewGame}
-          className="mb-4 w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
+          className="mb-4 w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
         >
           Start New Game
         </button>
@@ -184,21 +184,21 @@ const App = () => {
           <div className="flex justify-between mt-4">
             <button 
               onClick={goBack}
-              className="bg-yellow-600 text-white py-2 px-4 rounded hover:bg-yellow-700"
+              className="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600"
               disabled={roundHistory.length === 0}
             >
               Back
             </button>
             <button 
               onClick={nextRound}
-              className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
             >
               Next Round
             </button>
           </div>
 
           {errorMessage && (
-            <div className="mt-4 p-4 bg-red-900 text-red-100 rounded">
+            <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
               <AlertCircle className="inline-block mr-2 h-4 w-4" />
               <span>{errorMessage}</span>
             </div>
