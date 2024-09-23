@@ -97,6 +97,7 @@ const App = () => {
 
   const handleWinLose = (playerName, won) => {
     setWins(prev => ({ ...prev, [playerName]: won }));
+    // Store the current score before updating
     setPreviousScores(prev => ({
       ...prev,
       [playerName]: players.find(p => p.name === playerName).score
@@ -111,9 +112,12 @@ const App = () => {
     });
     setPlayers(prevPlayers => prevPlayers.map(player => {
       if (player.name === playerName) {
-        // If it's the first round and phase, reset to 0, otherwise use the previous score
-        const resetScore = currentRound === 1 && currentPhase === 1 ? 0 : (previousScores[playerName] || player.score);
-        return { ...player, score: resetScore };
+        // Always allow resetting to 0 in the first round
+        if (currentRound === 1 && currentPhase === 1) {
+          return { ...player, score: 0 };
+        } else {
+          return { ...player, score: previousScores[playerName] || player.score };
+        }
       }
       return player;
     }));
