@@ -2,6 +2,14 @@ import React from 'react';
 import { Trash2, RotateCcw } from 'lucide-react';
 
 const PlayerCard = ({ player, bid, handleBid, handleWinLose, resetWinLose, removePlayer, isWinLoseDisabled, cardsInRound, hasWon }) => {
+  const [inputBid, setInputBid] = React.useState('');
+
+  const submitBid = () => {
+    const numericBid = inputBid === '' ? 0 : Number(inputBid);
+    handleBid(player.name, numericBid);
+    setInputBid('');
+  };
+
   return (
     <div className="mb-4 p-4 bg-white border border-gray-200 rounded shadow">
       <div className="flex justify-between items-center mb-2">
@@ -18,18 +26,33 @@ const PlayerCard = ({ player, bid, handleBid, handleWinLose, resetWinLose, remov
         <div>
           <span className="font-semibold">Bid:</span>
           <div className="flex space-x-2">
+            <button 
+              onClick={() => handleBid(player.name, 0)}
+              className="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+            >
+              0
+            </button>
             <input 
               type="number" 
-              min="0" 
+              min="1" 
               max={cardsInRound}
-              value={bid === undefined ? '' : bid}
-              onChange={(e) => {
-                const value = e.target.value === '' ? undefined : Number(e.target.value);
-                handleBid(player.name, value);
-              }}
+              value={inputBid}
+              onChange={(e) => setInputBid(e.target.value)}
               className="w-20 px-2 py-1 border border-gray-300 rounded"
             />
+            <button 
+              onClick={submitBid}
+              className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Bid
+            </button>
           </div>
+          {bid !== undefined && (
+            <div className="mt-2">
+              <span className="font-semibold">Current Bid: </span>
+              <span>{bid}</span>
+            </div>
+          )}
         </div>
         {hasWon === undefined ? (
           <>
