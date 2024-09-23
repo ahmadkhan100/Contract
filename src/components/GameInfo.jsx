@@ -1,9 +1,29 @@
 import React from 'react';
 
-const getSuit = (round) => {
-  if (round % 5 === 3) return 'High Card';
-  const suits = ['Spades', 'Hearts', 'Clubs', 'Diamonds'];
-  return suits[(round - 1) % 4];
+const getSuit = (round, phase) => {
+  if (phase === 1) {
+    switch (round) {
+      case 7: return 'Spades';
+      case 6: return 'Hearts';
+      case 5: return 'Clubs';
+      case 4: return 'Diamonds';
+      case 3: return 'High Card';
+      case 2: return 'Spades';
+      case 1: return 'Hearts';
+      default: return '';
+    }
+  } else {
+    switch (round) {
+      case 1: return 'Clubs';
+      case 2: return 'Diamonds';
+      case 3: return 'High Card';
+      case 4: return 'Spades';
+      case 5: return 'Hearts';
+      case 6: return 'Clubs';
+      case 7: return 'Diamonds';
+      default: return '';
+    }
+  }
 };
 
 const GameInfo = ({ currentRound, currentPhase, cardsInRound }) => {
@@ -25,7 +45,7 @@ const GameInfo = ({ currentRound, currentPhase, cardsInRound }) => {
         </div>
         <div>
           <span className="font-semibold">Suit:</span>
-          <div className="text-2xl font-bold">{getSuit(currentRound)}</div>
+          <div className="text-2xl font-bold">{getSuit(currentRound, currentPhase)}</div>
         </div>
       </div>
     </div>
