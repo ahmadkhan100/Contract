@@ -1,55 +1,47 @@
 import React from 'react';
 import { Trash2 } from 'lucide-react';
-import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
 
 const PlayerCard = ({ player, bid, handleBid, handleWinLose, removePlayer, isWinLoseDisabled, cardsInRound }) => {
   return (
-    <Card className="mb-4">
-      <CardHeader>
-        <CardTitle className="flex justify-between items-center">
-          {player.name}
-          <Button variant="destructive" size="sm" onClick={() => removePlayer(player.name)}>
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center space-x-4">
-          <div>
-            <Label>Score</Label>
-            <div className="text-2xl font-bold">{player.score}</div>
-          </div>
-          <div>
-            <Label>Bid</Label>
-            <Input 
-              type="number" 
-              min="0" 
-              max={cardsInRound}
-              value={bid || ''}
-              onChange={(e) => handleBid(player.name, parseInt(e.target.value))}
-              className="w-20"
-            />
-          </div>
-          <Button 
-            onClick={() => handleWinLose(player.name, true)}
-            disabled={isWinLoseDisabled}
-            className="bg-green-500 hover:bg-green-600"
-          >
-            Win
-          </Button>
-          <Button 
-            onClick={() => handleWinLose(player.name, false)}
-            disabled={isWinLoseDisabled}
-            className="bg-red-500 hover:bg-red-600"
-          >
-            Lose
-          </Button>
+    <div className="mb-4 p-4 bg-white shadow rounded">
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="text-lg font-bold">{player.name}</h3>
+        <button onClick={() => removePlayer(player.name)} className="text-red-500 hover:text-red-700">
+          <Trash2 className="h-4 w-4" />
+        </button>
+      </div>
+      <div className="flex items-center space-x-4">
+        <div>
+          <span className="font-semibold">Score:</span>
+          <div className="text-2xl font-bold">{player.score}</div>
         </div>
-      </CardContent>
-    </Card>
+        <div>
+          <span className="font-semibold">Bid:</span>
+          <input 
+            type="number" 
+            min="0" 
+            max={cardsInRound}
+            value={bid || ''}
+            onChange={(e) => handleBid(player.name, parseInt(e.target.value))}
+            className="w-20 px-2 py-1 border rounded"
+          />
+        </div>
+        <button 
+          onClick={() => handleWinLose(player.name, true)}
+          disabled={isWinLoseDisabled}
+          className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
+        >
+          Win
+        </button>
+        <button 
+          onClick={() => handleWinLose(player.name, false)}
+          disabled={isWinLoseDisabled}
+          className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
+        >
+          Lose
+        </button>
+      </div>
+    </div>
   );
 };
 
