@@ -4,6 +4,7 @@ import AddPlayer from './components/AddPlayer';
 import GameInfo from './components/GameInfo';
 import PlayerCard from './components/PlayerCard';
 import Leaderboard from './components/Leaderboard';
+import Footer from './components/Footer';
 
 const App = () => {
   const [players, setPlayers] = useState([]);
@@ -124,7 +125,12 @@ const App = () => {
   };
 
   if (gameMode === 'leaderboard') {
-    return <Leaderboard leaderboard={leaderboard} startNewGame={startNewGame} />;
+    return (
+      <div className="p-4 max-w-4xl mx-auto">
+        <Leaderboard leaderboard={leaderboard} startNewGame={startNewGame} />
+        <Footer />
+      </div>
+    );
   }
 
   return (
@@ -177,22 +183,4 @@ const App = () => {
             </button>
             <button 
               onClick={nextRound}
-              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-            >
-              Next Round
-            </button>
-          </div>
-
-          {errorMessage && (
-            <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
-              <AlertCircle className="inline-block mr-2 h-4 w-4" />
-              <span>{errorMessage}</span>
-            </div>
-          )}
-        </>
-      )}
-    </div>
-  );
-};
-
-export default App;
+              className="bg-blue-500 text-white py-2 
