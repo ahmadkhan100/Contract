@@ -5,18 +5,18 @@ const PlayerCard = ({ player, bid, handleBid, handleWinLose, removePlayer, isWin
   return (
     <div className="mb-4 p-4 bg-gray-800 shadow rounded">
       <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-bold">{player.name}</h3>
+        <h3 className="text-lg font-bold text-white">{player.name}</h3>
         <button onClick={() => removePlayer(player.name)} className="text-red-500 hover:text-red-700">
           <Trash2 className="h-4 w-4" />
         </button>
       </div>
       <div className="flex items-center space-x-4">
         <div>
-          <span className="font-semibold">Score:</span>
-          <div className="text-2xl font-bold">{player.score}</div>
+          <span className="font-semibold text-gray-300">Score:</span>
+          <div className="text-2xl font-bold text-white">{player.score}</div>
         </div>
         <div>
-          <span className="font-semibold">Bid:</span>
+          <span className="font-semibold text-gray-300">Bid:</span>
           <div className="flex space-x-2">
             <button 
               onClick={() => handleBid(player.name, 0)}
@@ -29,7 +29,7 @@ const PlayerCard = ({ player, bid, handleBid, handleWinLose, removePlayer, isWin
               min="0" 
               max={cardsInRound}
               value={bid || ''}
-              onChange={(e) => handleBid(player.name, parseInt(e.target.value))}
+              onChange={(e) => handleBid(player.name, parseInt(e.target.value) || 0)}
               className="w-20 px-2 py-1 bg-gray-700 text-white border border-gray-600 rounded"
             />
           </div>
