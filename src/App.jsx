@@ -104,7 +104,7 @@ const App = () => {
     setCurrentRound(1);
     setCurrentPhase(1);
     setBids({});
-    setGameMode('new');
+    setGameMode('playing');
     setErrorMessage('');
   };
 
@@ -116,7 +116,7 @@ const App = () => {
     <div className="p-4 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-center">Contract Card Game</h1>
 
-      {gameMode === 'new' && players.length === 0 && (
+      {gameMode === 'new' && (
         <button 
           onClick={startNewGame}
           className="mb-4 w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
@@ -125,45 +125,49 @@ const App = () => {
         </button>
       )}
 
-      <GameInfo
-        currentRound={currentRound}
-        currentPhase={currentPhase}
-        cardsInRound={cardsInRound}
-      />
+      {gameMode === 'playing' && (
+        <>
+          <GameInfo
+            currentRound={currentRound}
+            currentPhase={currentPhase}
+            cardsInRound={cardsInRound}
+          />
 
-      <AddPlayer
-        newPlayerName={newPlayerName}
-        setNewPlayerName={setNewPlayerName}
-        addPlayer={addPlayer}
-      />
+          <AddPlayer
+            newPlayerName={newPlayerName}
+            setNewPlayerName={setNewPlayerName}
+            addPlayer={addPlayer}
+          />
 
-      {players.map((player) => (
-        <PlayerCard
-          key={player.name}
-          player={player}
-          bid={bids[player.name]}
-          handleBid={handleBid}
-          handleWinLose={handleWinLose}
-          removePlayer={removePlayer}
-          isWinLoseDisabled={isWinLoseDisabled()}
-          cardsInRound={cardsInRound}
-        />
-      ))}
+          {players.map((player) => (
+            <PlayerCard
+              key={player.name}
+              player={player}
+              bid={bids[player.name]}
+              handleBid={handleBid}
+              handleWinLose={handleWinLose}
+              removePlayer={removePlayer}
+              isWinLoseDisabled={isWinLoseDisabled()}
+              cardsInRound={cardsInRound}
+            />
+          ))}
 
-      {players.length > 0 && (
-        <button 
-          onClick={nextRound}
-          className="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-        >
-          Next Round
-        </button>
-      )}
+          {players.length > 0 && (
+            <button 
+              onClick={nextRound}
+              className="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+            >
+              Next Round
+            </button>
+          )}
 
-      {errorMessage && (
-        <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
-          <AlertCircle className="inline-block mr-2 h-4 w-4" />
-          <span>{errorMessage}</span>
-        </div>
+          {errorMessage && (
+            <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
+              <AlertCircle className="inline-block mr-2 h-4 w-4" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
