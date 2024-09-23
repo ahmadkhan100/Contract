@@ -83,7 +83,6 @@ const App = () => {
   const handleBid = (playerName, bid) => {
     setBids(prev => ({ ...prev, [playerName]: bid }));
     validateBids({ ...bids, [playerName]: bid });
-    updateScores(playerName, bid, wins[playerName]);
   };
 
   const handleWinLose = (playerName, won) => {
@@ -102,15 +101,15 @@ const App = () => {
   const updateScores = (playerName, bid, won) => {
     setPlayers(prevPlayers => prevPlayers.map(player => {
       if (player.name === playerName) {
-        let score = 0;
+        let additionalScore = 0;
         if (won === true) {
           if (bid === 0) {
-            score = 10;
+            additionalScore = 10;
           } else {
-            score = bid * 11 + 10;
+            additionalScore = bid * 11 + 10;
           }
         }
-        return { ...player, score };
+        return { ...player, score: player.score + additionalScore };
       }
       return player;
     }));
@@ -135,7 +134,7 @@ const App = () => {
     setWins({});
     setPlayers(prevPlayers => {
       const rotatedPlayers = [...prevPlayers.slice(1), prevPlayers[0]];
-      return rotatedPlayers.map(player => ({ ...player, score: 0 }));
+      return rotatedPlayers; // Scores are not reset
     });
     setErrorMessage('');
   };
