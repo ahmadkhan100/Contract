@@ -3,7 +3,7 @@ import { Trash2 } from 'lucide-react';
 
 const PlayerCard = ({ player, bid, handleBid, handleWinLose, removePlayer, isWinLoseDisabled, cardsInRound, hasWon }) => {
   return (
-    <div className="mb-4 p-4 bg-white shadow rounded">
+    <div className="mb-4 p-4 bg-white border border-gray-200 rounded shadow">
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-bold">{player.name}</h3>
         <button onClick={() => removePlayer(player.name)} className="text-red-500 hover:text-red-700">
@@ -18,12 +18,6 @@ const PlayerCard = ({ player, bid, handleBid, handleWinLose, removePlayer, isWin
         <div>
           <span className="font-semibold">Bid:</span>
           <div className="flex space-x-2">
-            <button 
-              onClick={() => handleBid(player.name, 0)}
-              className="px-2 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-            >
-              0
-            </button>
             <input 
               type="number" 
               min="0" 
@@ -43,7 +37,7 @@ const PlayerCard = ({ player, bid, handleBid, handleWinLose, removePlayer, isWin
         </button>
         <button 
           onClick={() => handleWinLose(player.name, false)}
-          disabled={isWinLoseDisabled}
+          disabled={isWinLoseDisabled || hasWon === false}
           className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
         >
           Lose
