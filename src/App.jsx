@@ -81,7 +81,15 @@ const App = () => {
   };
 
   const handleBid = (playerName, bid) => {
-    setBids(prev => ({ ...prev, [playerName]: bid }));
+    setBids(prev => {
+      const newBids = { ...prev };
+      if (bid === undefined) {
+        delete newBids[playerName];
+      } else {
+        newBids[playerName] = bid;
+      }
+      return newBids;
+    });
     validateBids({ ...bids, [playerName]: bid });
   };
 
