@@ -111,7 +111,9 @@ const App = () => {
     });
     setPlayers(prevPlayers => prevPlayers.map(player => {
       if (player.name === playerName) {
-        return { ...player, score: previousScores[playerName] || player.score };
+        // If it's the first round and phase, reset to 0, otherwise use the previous score
+        const resetScore = currentRound === 1 && currentPhase === 1 ? 0 : (previousScores[playerName] || player.score);
+        return { ...player, score: resetScore };
       }
       return player;
     }));
