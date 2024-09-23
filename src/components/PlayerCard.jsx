@@ -18,18 +18,15 @@ const PlayerCard = ({ player, bid, handleBid, handleWinLose, resetWinLose, remov
         <div>
           <span className="font-semibold">Bid:</span>
           <div className="flex space-x-2">
-            <button 
-              onClick={() => handleBid(player.name, 0)}
-              className="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-            >
-              0
-            </button>
             <input 
               type="number" 
-              min="1" 
+              min="0" 
               max={cardsInRound}
-              value={bid || ''}
-              onChange={(e) => handleBid(player.name, parseInt(e.target.value) || 0)}
+              value={bid !== undefined ? bid : ''}
+              onChange={(e) => {
+                const value = e.target.value === '' ? '' : parseInt(e.target.value);
+                handleBid(player.name, value);
+              }}
               className="w-20 px-2 py-1 border border-gray-300 rounded"
             />
           </div>
