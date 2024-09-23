@@ -18,7 +18,7 @@ const PlayerCard = ({ player, bid, handleBid, handleWinLose, resetWinLose, remov
         <div>
           <span className="font-semibold">Bid:</span>
           <div className="flex space-x-2">
-            <button
+            <button 
               onClick={() => handleBid(player.name, 0)}
               className="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
             >
