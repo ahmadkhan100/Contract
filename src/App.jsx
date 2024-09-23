@@ -46,7 +46,7 @@ const App = () => {
   const handleBid = (playerName, bid) => {
     setBids(prev => ({ ...prev, [playerName]: bid }));
     validateBids({ ...bids, [playerName]: bid });
-    updateScores(playerName, bid, wins[playerName] || false);
+    updateScores(playerName, bid, wins[playerName]);
   };
 
   const handleWinLose = (playerName, won) => {
@@ -54,11 +54,19 @@ const App = () => {
     updateScores(playerName, bids[playerName] || 0, won);
   };
 
+  const resetWinLose = (playerName) => {
+    setWins(prev => {
+      const { [playerName]: removed, ...rest } = prev;
+      return rest;
+    });
+    updateScores(playerName, bids[playerName] || 0, null);
+  };
+
   const updateScores = (playerName, bid, won) => {
     setPlayers(prevPlayers => prevPlayers.map(player => {
       if (player.name === playerName) {
         let score = 0;
-        if (won) {
+        if (won === true) {
           if (bid === 0) {
             score = 10;
           } else {
@@ -181,6 +189,7 @@ const App = () => {
               bid={bids[player.name]}
               handleBid={handleBid}
               handleWinLose={handleWinLose}
+              resetWinLose={resetWinLose}
               removePlayer={removePlayer}
               isWinLoseDisabled={isWinLoseDisabled()}
               cardsInRound={cardsInRound}
