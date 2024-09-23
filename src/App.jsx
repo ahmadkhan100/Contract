@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, RotateCcw } from 'lucide-react';
 import AddPlayer from './components/AddPlayer';
 import GameInfo from './components/GameInfo';
 import PlayerCard from './components/PlayerCard';
@@ -18,6 +18,7 @@ const App = () => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [gameMode, setGameMode] = useState('new');
   const [roundHistory, setRoundHistory] = useState([]);
+  const [previousGameState, setPreviousGameState] = useState(null);
 
   useEffect(() => {
     loadGameState();
@@ -194,6 +195,16 @@ const App = () => {
   };
 
   const startNewGame = () => {
+    setPreviousGameState({
+      players,
+      currentRound,
+      currentPhase,
+      bids,
+      wins,
+      leaderboard,
+      gameMode,
+      roundHistory
+    });
     setPlayers([]);
     setCurrentRound(1);
     setCurrentPhase(1);
@@ -205,26 +216,43 @@ const App = () => {
     localStorage.removeItem('gameState');
   };
 
-  if (gameMode === 'leaderboard') {
-    return (
-      <div className="p-4 max-w-4xl mx-auto bg-white">
-        <Leaderboard leaderboard={leaderboard} startNewGame={startNewGame} />
-        <Footer />
-      </div>
-    );
-  }
+  const undoNewGame = () => {
+    if (previousGameState) {
+      setPlayers(previousGameState.players);
+      setCurrentRound(previousGameState.currentRound);
+      setCurrentPhase(previousGameState.currentPhase);
+      setBids(previousGameState.bids);
+      setWins(previousGameState.wins);
+      setLeaderboard(previousGameState.leaderboard);
+      setGameMode(previousGameState.gameMode);
+      setRoundHistory(previousGameState.roundHistory);
+      setPreviousGameState(null);
+    }
+  };
 
   return (
     <div className="p-4 max-w-4xl mx-auto bg-white">
       <h1 className="text-3xl font-bold mb-6 text-center">Contract Card Game</h1>
 
-      {gameMode === 'new' && (
+      <div className="mb-4 flex justify-between">
         <button 
           onClick={startNewGame}
-          className="mb-4 w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+          className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
         >
-          Start New Game
+          New Game
         </button>
+        {previousGameState && (
+          <button 
+            onClick={undoNewGame}
+            className="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600 flex items-center"
+          >
+            <RotateCcw className="mr-2 h-4 w-4" /> Undo New Game
+          </button>
+        )}
+      </div>
+
+      {gameMode === 'leaderboard' && (
+        <Leaderboard leaderboard={leaderboard} startNewGame={startNewGame} />
       )}
 
       {gameMode === 'playing' && (
