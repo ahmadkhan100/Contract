@@ -12,12 +12,12 @@ const App = () => {
   const [currentPhase, setCurrentPhase] = useState(1);
   const [cardsInRound, setCardsInRound] = useState(7);
   const [bids, setBids] = useState({});
+  const [wins, setWins] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
   const [newPlayerName, setNewPlayerName] = useState('');
   const [leaderboard, setLeaderboard] = useState([]);
   const [gameMode, setGameMode] = useState('new');
   const [roundHistory, setRoundHistory] = useState([]);
-  const [winningPlayers, setWinningPlayers] = useState(new Set());
 
   useEffect(() => {
     const cards = currentPhase === 1 ? 8 - currentRound : currentRound;
@@ -37,35 +37,42 @@ const App = () => {
       const { [playerName]: removed, ...rest } = prevBids;
       return rest;
     });
+    setWins(prevWins => {
+      const { [playerName]: removed, ...rest } = prevWins;
+      return rest;
+    });
   };
 
   const handleBid = (playerName, bid) => {
     setBids(prev => ({ ...prev, [playerName]: bid }));
     validateBids({ ...bids, [playerName]: bid });
+    updateScores(playerName, bid, wins[playerName] || false);
   };
 
   const handleWinLose = (playerName, won) => {
-    if (winningPlayers.has(playerName)) return;
+    setWins(prev => ({ ...prev, [playerName]: won }));
+    updateScores(playerName, bids[playerName] || 0, won);
+  };
 
-    const bid = bids[playerName] || 0;
-    let score = 0;
-    if (won) {
-      if (bid === 0) {
-        score = 10;
-      } else {
-        score = bid * 11 + 10;
+  const updateScores = (playerName, bid, won) => {
+    setPlayers(prevPlayers => prevPlayers.map(player => {
+      if (player.name === playerName) {
+        let score = 0;
+        if (won) {
+          if (bid === 0) {
+            score = 10;
+          } else {
+            score = bid * 11 + 10;
+          }
+        }
+        return { ...player, score };
       }
-      setWinningPlayers(new Set(winningPlayers.add(playerName)));
-    }
-    setPlayers(players.map(player =>
-      player.name === playerName
-        ? { ...player, score: player.score + score }
-        : player
-    ));
+      return player;
+    }));
   };
 
   const nextRound = () => {
-    setRoundHistory([...roundHistory, { round: currentRound, phase: currentPhase, players: [...players], bids: {...bids} }]);
+    setRoundHistory([...roundHistory, { round: currentRound, phase: currentPhase, players: [...players], bids: {...bids}, wins: {...wins} }]);
     
     if (currentRound === 7 && currentPhase === 2) {
       endGame();
@@ -80,12 +87,12 @@ const App = () => {
     }
 
     setBids({});
+    setWins({});
     setPlayers(prevPlayers => {
       const rotatedPlayers = [...prevPlayers.slice(1), prevPlayers[0]];
-      return rotatedPlayers;
+      return rotatedPlayers.map(player => ({ ...player, score: 0 }));
     });
     setErrorMessage('');
-    setWinningPlayers(new Set());
   };
 
   const goBack = () => {
@@ -95,8 +102,8 @@ const App = () => {
       setCurrentPhase(lastRound.phase);
       setPlayers(lastRound.players);
       setBids(lastRound.bids);
+      setWins(lastRound.wins);
       setRoundHistory([...roundHistory]);
-      setWinningPlayers(new Set());
     }
   };
 
@@ -125,15 +132,15 @@ const App = () => {
     setCurrentRound(1);
     setCurrentPhase(1);
     setBids({});
+    setWins({});
     setGameMode('playing');
     setErrorMessage('');
     setRoundHistory([]);
-    setWinningPlayers(new Set());
   };
 
   if (gameMode === 'leaderboard') {
     return (
-      <div className="p-4 max-w-4xl mx-auto">
+      <div className="p-4 max-w-4xl mx-auto bg-white">
         <Leaderboard leaderboard={leaderboard} startNewGame={startNewGame} />
         <Footer />
       </div>
@@ -141,7 +148,7 @@ const App = () => {
   }
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
+    <div className="p-4 max-w-4xl mx-auto bg-white">
       <h1 className="text-3xl font-bold mb-6 text-center">Contract Card Game</h1>
 
       {gameMode === 'new' && (
@@ -177,7 +184,7 @@ const App = () => {
               removePlayer={removePlayer}
               isWinLoseDisabled={isWinLoseDisabled()}
               cardsInRound={cardsInRound}
-              hasWon={winningPlayers.has(player.name)}
+              hasWon={wins[player.name]}
             />
           ))}
 
