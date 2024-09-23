@@ -105,6 +105,7 @@ const App = () => {
     setCurrentPhase(1);
     setBids({});
     setGameMode('new');
+    setErrorMessage('');
   };
 
   if (gameMode === 'leaderboard') {
@@ -114,6 +115,15 @@ const App = () => {
   return (
     <div className="p-4 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-center">Contract Card Game</h1>
+
+      {gameMode === 'new' && players.length === 0 && (
+        <button 
+          onClick={startNewGame}
+          className="mb-4 w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+        >
+          Start New Game
+        </button>
+      )}
 
       <GameInfo
         currentRound={currentRound}
@@ -140,12 +150,14 @@ const App = () => {
         />
       ))}
 
-      <button 
-        onClick={nextRound}
-        className="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-      >
-        Next Round
-      </button>
+      {players.length > 0 && (
+        <button 
+          onClick={nextRound}
+          className="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+        >
+          Next Round
+        </button>
+      )}
 
       {errorMessage && (
         <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
