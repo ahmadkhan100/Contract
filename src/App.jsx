@@ -95,7 +95,7 @@ const App = () => {
 
   const handleWinLose = (playerName, won) => {
     setWins(prev => ({ ...prev, [playerName]: won }));
-    updateScores(playerName, bids[playerName] || 0, won);
+    updateScores(playerName, bids[playerName], won);
   };
 
   const resetWinLose = (playerName) => {
@@ -103,7 +103,7 @@ const App = () => {
       const { [playerName]: removed, ...rest } = prev;
       return rest;
     });
-    updateScores(playerName, bids[playerName] || 0, null);
+    updateScores(playerName, bids[playerName], null);
   };
 
   const updateScores = (playerName, bid, won) => {
