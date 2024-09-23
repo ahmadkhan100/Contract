@@ -17,6 +17,7 @@ const App = () => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [gameMode, setGameMode] = useState('new');
   const [roundHistory, setRoundHistory] = useState([]);
+  const [winningPlayers, setWinningPlayers] = useState(new Set());
 
   useEffect(() => {
     const cards = currentPhase === 1 ? 8 - currentRound : currentRound;
@@ -44,6 +45,8 @@ const App = () => {
   };
 
   const handleWinLose = (playerName, won) => {
+    if (winningPlayers.has(playerName)) return;
+
     const bid = bids[playerName] || 0;
     let score = 0;
     if (won) {
@@ -52,6 +55,7 @@ const App = () => {
       } else {
         score = bid * 11 + 10;
       }
+      setWinningPlayers(new Set(winningPlayers.add(playerName)));
     }
     setPlayers(players.map(player =>
       player.name === playerName
@@ -81,6 +85,7 @@ const App = () => {
       return rotatedPlayers;
     });
     setErrorMessage('');
+    setWinningPlayers(new Set());
   };
 
   const goBack = () => {
@@ -91,6 +96,7 @@ const App = () => {
       setPlayers(lastRound.players);
       setBids(lastRound.bids);
       setRoundHistory([...roundHistory]);
+      setWinningPlayers(new Set());
     }
   };
 
@@ -122,11 +128,12 @@ const App = () => {
     setGameMode('playing');
     setErrorMessage('');
     setRoundHistory([]);
+    setWinningPlayers(new Set());
   };
 
   if (gameMode === 'leaderboard') {
     return (
-      <div className="p-4 max-w-4xl mx-auto">
+      <div className="p-4 max-w-4xl mx-auto bg-gray-900 text-white min-h-screen">
         <Leaderboard leaderboard={leaderboard} startNewGame={startNewGame} />
         <Footer />
       </div>
@@ -134,13 +141,13 @@ const App = () => {
   }
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
+    <div className="p-4 max-w-4xl mx-auto bg-gray-900 text-white min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-center">Contract Card Game</h1>
 
       {gameMode === 'new' && (
         <button 
           onClick={startNewGame}
-          className="mb-4 w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+          className="mb-4 w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
         >
           Start New Game
         </button>
@@ -170,27 +177,28 @@ const App = () => {
               removePlayer={removePlayer}
               isWinLoseDisabled={isWinLoseDisabled()}
               cardsInRound={cardsInRound}
+              hasWon={winningPlayers.has(player.name)}
             />
           ))}
 
           <div className="flex justify-between mt-4">
             <button 
               onClick={goBack}
-              className="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600"
+              className="bg-yellow-600 text-white py-2 px-4 rounded hover:bg-yellow-700"
               disabled={roundHistory.length === 0}
             >
               Back
             </button>
             <button 
               onClick={nextRound}
-              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+              className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
             >
               Next Round
             </button>
           </div>
 
           {errorMessage && (
-            <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
+            <div className="mt-4 p-4 bg-red-900 text-red-100 rounded">
               <AlertCircle className="inline-block mr-2 h-4 w-4" />
               <span>{errorMessage}</span>
             </div>
