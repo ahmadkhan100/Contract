@@ -15,6 +15,7 @@ const App = () => {
   const [newPlayerName, setNewPlayerName] = useState('');
   const [leaderboard, setLeaderboard] = useState([]);
   const [gameMode, setGameMode] = useState('new');
+  const [roundHistory, setRoundHistory] = useState([]);
 
   useEffect(() => {
     const cards = currentPhase === 1 ? 8 - currentRound : currentRound;
@@ -59,6 +60,8 @@ const App = () => {
   };
 
   const nextRound = () => {
+    setRoundHistory([...roundHistory, { round: currentRound, phase: currentPhase, players: [...players], bids: {...bids} }]);
+    
     if (currentRound === 7 && currentPhase === 2) {
       endGame();
       return;
@@ -77,6 +80,17 @@ const App = () => {
       return rotatedPlayers;
     });
     setErrorMessage('');
+  };
+
+  const goBack = () => {
+    if (roundHistory.length > 0) {
+      const lastRound = roundHistory.pop();
+      setCurrentRound(lastRound.round);
+      setCurrentPhase(lastRound.phase);
+      setPlayers(lastRound.players);
+      setBids(lastRound.bids);
+      setRoundHistory([...roundHistory]);
+    }
   };
 
   const validateBids = (newBids) => {
@@ -106,6 +120,7 @@ const App = () => {
     setBids({});
     setGameMode('playing');
     setErrorMessage('');
+    setRoundHistory([]);
   };
 
   if (gameMode === 'leaderboard') {
@@ -152,14 +167,21 @@ const App = () => {
             />
           ))}
 
-          {players.length > 0 && (
+          <div className="flex justify-between mt-4">
+            <button 
+              onClick={goBack}
+              className="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600"
+              disabled={roundHistory.length === 0}
+            >
+              Back
+            </button>
             <button 
               onClick={nextRound}
-              className="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
             >
               Next Round
             </button>
-          )}
+          </div>
 
           {errorMessage && (
             <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
