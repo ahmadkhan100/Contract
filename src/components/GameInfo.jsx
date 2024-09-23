@@ -28,7 +28,7 @@ const getSuit = (round, phase) => {
 
 const GameInfo = ({ currentRound, currentPhase, cardsInRound }) => {
   return (
-    <div className="mb-6 p-4 bg-white shadow rounded">
+    <div className="mb-6 p-4 bg-white border border-gray-200 rounded shadow">
       <h2 className="text-xl font-bold mb-2">Game Info</h2>
       <div className="grid grid-cols-2 gap-4">
         <div>
