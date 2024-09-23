@@ -3,13 +3,13 @@ import React from 'react';
 const getSuit = (round, phase) => {
   if (phase === 1) {
     switch (round) {
-      case 7: return 'Spades';
-      case 6: return 'Hearts';
-      case 5: return 'Clubs';
+      case 1: return 'Spades';
+      case 2: return 'Hearts';
+      case 3: return 'Clubs';
       case 4: return 'Diamonds';
-      case 3: return 'High Card';
-      case 2: return 'Spades';
-      case 1: return 'Hearts';
+      case 5: return 'High Card';
+      case 6: return 'Spades';
+      case 7: return 'Hearts';
       default: return '';
     }
   } else {
