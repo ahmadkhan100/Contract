@@ -183,4 +183,24 @@ const App = () => {
             </button>
             <button 
               onClick={nextRound}
-              className="bg-blue-500 text-white py-2 
+              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+            >
+              Next Round
+            </button>
+          </div>
+
+          {errorMessage && (
+            <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
+              <AlertCircle className="inline-block mr-2 h-4 w-4" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
+        </>
+      )}
+
+      <Footer />
+    </div>
+  );
+};
+
+export default App;
