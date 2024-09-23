@@ -3,24 +3,24 @@ import React from 'react';
 const getSuit = (round, phase) => {
   if (phase === 1) {
     switch (round) {
-      case 1: return 'Spades';
-      case 2: return 'Hearts';
-      case 3: return 'Clubs';
-      case 4: return 'Diamonds';
-      case 5: return 'High Card';
-      case 6: return 'Spades';
-      case 7: return 'Hearts';
+      case 1: return '♠️ Spades';
+      case 2: return '♥️ Hearts';
+      case 3: return '♣️ Clubs';
+      case 4: return '♦️ Diamonds';
+      case 5: return '🃏 High Card';
+      case 6: return '♠️ Spades';
+      case 7: return '♥️ Hearts';
       default: return '';
     }
   } else {
     switch (round) {
-      case 1: return 'Clubs';
-      case 2: return 'Diamonds';
-      case 3: return 'High Card';
-      case 4: return 'Spades';
-      case 5: return 'Hearts';
-      case 6: return 'Clubs';
-      case 7: return 'Diamonds';
+      case 1: return '♣️ Clubs';
+      case 2: return '♦️ Diamonds';
+      case 3: return '🃏 High Card';
+      case 4: return '♠️ Spades';
+      case 5: return '♥️ Hearts';
+      case 6: return '♣️ Clubs';
+      case 7: return '♦️ Diamonds';
       default: return '';
     }
   }
