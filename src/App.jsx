@@ -118,20 +118,18 @@ const App = () => {
   const updateScores = (playerName, bid, won) => {
     setPlayers(prevPlayers => prevPlayers.map(player => {
       if (player.name === playerName) {
-        const scoreChange = won ? bid : -bid;
-        return { ...player, score: player.score + scoreChange };
+        let additionalScore = 0;
+        if (won === true) {
+          if (bid === 0) {
+            additionalScore = 10;
+          } else {
+            additionalScore = bid * 11 + 10;
+          }
+        }
+        return { ...player, score: player.score + additionalScore };
       }
       return player;
     }));
-  };
-
-  const validateBids = (bids) => {
-    const totalBids = Object.values(bids).reduce((sum, bid) => sum + bid, 0);
-    if (totalBids > cardsInRound) {
-      setErrorMessage('Total bids cannot exceed the number of cards in the round.');
-    } else {
-      setErrorMessage('');
-    }
   };
 
   const nextRound = () => {
@@ -172,13 +170,27 @@ const App = () => {
       setPlayers(lastRound.players);
       setBids(lastRound.bids);
       setWins(lastRound.wins);
-      setRoundHistory(roundHistory);
+      setRoundHistory([...roundHistory]);
     }
   };
 
+  const validateBids = (newBids) => {
+    const totalBids = Object.values(newBids).reduce((sum, bid) => sum + (bid || 0), 0);
+    if (totalBids === cardsInRound) {
+      setErrorMessage('Error: Total bids cannot equal the number of cards in the round.');
+    } else {
+      setErrorMessage('');
+    }
+  };
+
+  const isWinLoseDisabled = () => {
+    return Object.keys(bids).length !== players.length || 
+           Object.values(bids).reduce((sum, bid) => sum + (bid || 0), 0) === cardsInRound;
+  };
+
   const endGame = () => {
-    const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
-    setLeaderboard(sortedPlayers);
+    const gameResult = players.map(player => ({ name: player.name, score: player.score }));
+    setLeaderboard(prevLeaderboard => [...prevLeaderboard, gameResult]);
     setGameMode('leaderboard');
   };
 
@@ -257,22 +269,20 @@ const App = () => {
             addPlayer={addPlayer}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {players.map((player) => (
-              <PlayerCard
-                key={player.name}
-                player={player}
-                bid={bids[player.name]}
-                handleBid={handleBid}
-                handleWinLose={handleWinLose}
-                resetWinLose={resetWinLose}
-                removePlayer={removePlayer}
-                isWinLoseDisabled={isWinLoseDisabled()}
-                cardsInRound={cardsInRound}
-                hasWon={wins[player.name]}
-              />
-            ))}
-          </div>
+          {players.map((player) => (
+            <PlayerCard
+              key={player.name}
+              player={player}
+              bid={bids[player.name]}
+              handleBid={handleBid}
+              handleWinLose={handleWinLose}
+              resetWinLose={resetWinLose}
+              removePlayer={removePlayer}
+              isWinLoseDisabled={isWinLoseDisabled()}
+              cardsInRound={cardsInRound}
+              hasWon={wins[player.name]}
+            />
+          ))}
 
           <div className="flex justify-between mt-4">
             <button 
