@@ -7,38 +7,21 @@ import Leaderboard from './components/Leaderboard';
 import Footer from './components/Footer';
 
 const App = () => {
-  const [players, setPlayers] = useState(() => {
-    const savedPlayers = localStorage.getItem('players');
-    return savedPlayers ? JSON.parse(savedPlayers) : [];
-  });
-  const [currentRound, setCurrentRound] = useState(() => {
-    return parseInt(localStorage.getItem('currentRound')) || 1;
-  });
-  const [currentPhase, setCurrentPhase] = useState(() => {
-    return parseInt(localStorage.getItem('currentPhase')) || 1;
-  });
+  const [players, setPlayers] = useState([]);
+  const [currentRound, setCurrentRound] = useState(1);
+  const [currentPhase, setCurrentPhase] = useState(1);
   const [cardsInRound, setCardsInRound] = useState(7);
-  const [bids, setBids] = useState(() => {
-    const savedBids = localStorage.getItem('bids');
-    return savedBids ? JSON.parse(savedBids) : {};
-  });
-  const [wins, setWins] = useState(() => {
-    const savedWins = localStorage.getItem('wins');
-    return savedWins ? JSON.parse(savedWins) : {};
-  });
+  const [bids, setBids] = useState({});
+  const [wins, setWins] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
   const [newPlayerName, setNewPlayerName] = useState('');
-  const [leaderboard, setLeaderboard] = useState(() => {
-    const savedLeaderboard = localStorage.getItem('leaderboard');
-    return savedLeaderboard ? JSON.parse(savedLeaderboard) : [];
-  });
-  const [gameMode, setGameMode] = useState(() => {
-    return localStorage.getItem('gameMode') || 'new';
-  });
-  const [roundHistory, setRoundHistory] = useState(() => {
-    const savedHistory = localStorage.getItem('roundHistory');
-    return savedHistory ? JSON.parse(savedHistory) : [];
-  });
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [gameMode, setGameMode] = useState('new');
+  const [roundHistory, setRoundHistory] = useState([]);
+
+  useEffect(() => {
+    loadGameState();
+  }, []);
 
   useEffect(() => {
     const cards = currentPhase === 1 ? 8 - currentRound : currentRound;
@@ -46,15 +29,37 @@ const App = () => {
   }, [currentRound, currentPhase]);
 
   useEffect(() => {
-    localStorage.setItem('players', JSON.stringify(players));
-    localStorage.setItem('currentRound', currentRound.toString());
-    localStorage.setItem('currentPhase', currentPhase.toString());
-    localStorage.setItem('bids', JSON.stringify(bids));
-    localStorage.setItem('wins', JSON.stringify(wins));
-    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-    localStorage.setItem('gameMode', gameMode);
-    localStorage.setItem('roundHistory', JSON.stringify(roundHistory));
+    saveGameState();
   }, [players, currentRound, currentPhase, bids, wins, leaderboard, gameMode, roundHistory]);
+
+  const saveGameState = () => {
+    const gameState = {
+      players,
+      currentRound,
+      currentPhase,
+      bids,
+      wins,
+      leaderboard,
+      gameMode,
+      roundHistory
+    };
+    localStorage.setItem('gameState', JSON.stringify(gameState));
+  };
+
+  const loadGameState = () => {
+    const savedState = localStorage.getItem('gameState');
+    if (savedState) {
+      const gameState = JSON.parse(savedState);
+      setPlayers(gameState.players);
+      setCurrentRound(gameState.currentRound);
+      setCurrentPhase(gameState.currentPhase);
+      setBids(gameState.bids);
+      setWins(gameState.wins);
+      setLeaderboard(gameState.leaderboard);
+      setGameMode(gameState.gameMode);
+      setRoundHistory(gameState.roundHistory);
+    }
+  };
 
   const addPlayer = () => {
     if (newPlayerName && !players.find(p => p.name === newPlayerName)) {
@@ -176,6 +181,7 @@ const App = () => {
     setGameMode('playing');
     setErrorMessage('');
     setRoundHistory([]);
+    localStorage.removeItem('gameState');
   };
 
   if (gameMode === 'leaderboard') {
