@@ -24,10 +24,8 @@ const PlayerCard = ({ player, bid, handleBid, handleWinLose, resetWinLose, remov
               max={cardsInRound}
               value={bid === undefined ? '' : bid}
               onChange={(e) => {
-                const value = e.target.value === '' ? undefined : parseInt(e.target.value, 10);
-                if (value === undefined || (value >= 0 && value <= cardsInRound)) {
-                  handleBid(player.name, value);
-                }
+                const value = e.target.value === '' ? undefined : Number(e.target.value);
+                handleBid(player.name, value);
               }}
               className="w-20 px-2 py-1 border border-gray-300 rounded"
             />
