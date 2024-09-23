@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Trash2, RotateCcw } from 'lucide-react';
 
 const PlayerCard = ({ player, bid, handleBid, handleWinLose, resetWinLose, removePlayer, isWinLoseDisabled, cardsInRound, hasWon }) => {
-  const [inputBid, setInputBid] = React.useState('');
+  const [inputBid, setInputBid] = useState('');
 
   const submitBid = () => {
     const numericBid = inputBid === '' ? 0 : Number(inputBid);
