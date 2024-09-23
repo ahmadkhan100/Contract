@@ -96,12 +96,12 @@ const App = () => {
   };
 
   const handleWinLose = (playerName, won) => {
-    setWins(prev => ({ ...prev, [playerName]: won }));
     // Store the current score before updating
     setPreviousScores(prev => ({
       ...prev,
       [playerName]: players.find(p => p.name === playerName).score
     }));
+    setWins(prev => ({ ...prev, [playerName]: won }));
     updateScores(playerName, bids[playerName], won);
   };
 
@@ -112,12 +112,8 @@ const App = () => {
     });
     setPlayers(prevPlayers => prevPlayers.map(player => {
       if (player.name === playerName) {
-        // Always allow resetting to 0 in the first round
-        if (currentRound === 1 && currentPhase === 1) {
-          return { ...player, score: 0 };
-        } else {
-          return { ...player, score: previousScores[playerName] || player.score };
-        }
+        // Always reset to the previous score, which could be 0 or the score from the previous round
+        return { ...player, score: previousScores[playerName] || 0 };
       }
       return player;
     }));
@@ -164,7 +160,11 @@ const App = () => {
 
     setBids({});
     setWins({});
-    setPreviousScores({});
+    // Store the current scores as previous scores for the next round
+    setPreviousScores(players.reduce((acc, player) => {
+      acc[player.name] = player.score;
+      return acc;
+    }, {}));
     setPlayers(prevPlayers => {
       const rotatedPlayers = [...prevPlayers.slice(1), prevPlayers[0]];
       return rotatedPlayers; // Scores are not reset
